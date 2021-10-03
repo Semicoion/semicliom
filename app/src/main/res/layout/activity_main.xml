@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+<HorizontalScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ادوات"
+            android:id="@+id/f4"
+            app:backgroundTint="#17D8EA"
+            android:layout_weight="1"
+            ></Button>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ملابس"
+            android:id="@+id/f3"
+            app:backgroundTint="#17D8EA"
+            android:layout_weight="1"
+            ></Button>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="نثريات"
+            android:id="@+id/f2"
+            android:layout_weight="1"
+            app:backgroundTint="#17D8EA"
+            ></Button>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="طعام "
+            android:id="@+id/f1"
+            android:layout_weight="1"
+            app:backgroundTint="#17D8EA"
+            ></Button>
+    </LinearLayout></HorizontalScrollView>
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/fragment1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/sectionLabel"
+       ></TextView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+       android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:onClick="Add_Item"
+        android:src="@android:drawable/ic_input_add"
+        app:backgroundTint="#17D8EA" />
+
+
+</RelativeLayout>
+</LinearLayout>

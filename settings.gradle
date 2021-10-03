@@ -1,0 +1,4 @@
+rootProject.name = "BookiStore"
+include ':app'
+include ':libs:picasso-master'
+
