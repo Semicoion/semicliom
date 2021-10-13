@@ -1,12 +1,16 @@
 package com.example.bookistore;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import androidx.appcompat.widget.Toolbar;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -60,7 +64,37 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void Add_Item(View view) {
-        Intent i = new Intent(MainActivity.this, Add_Category.class);
-        startActivity(i);
+       /* Intent i = new Intent(MainActivity.this, Add_Category.class);
+        startActivity(i);*/
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Title");
+        builder.setItems(new CharSequence[]
+                        {"طعام", "اثاث", "ملابس", "button 4"},
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // The 'which' argument contains the index position
+                        // of the selected item
+                        switch (which) {
+                            case 0:
+                                Intent i = new Intent(MainActivity.this, Add_Category.class);
+                                i.putExtra("category","0");
+                                startActivity(i);
+                                  break;
+                            case 1:
+                                Intent i1 = new Intent(MainActivity.this, Add_Category.class);
+                                i1.putExtra("category","1");
+                                startActivity(i1);   break;
+                            case 2:
+                                Intent i2 = new Intent(MainActivity.this, Add_Category.class);
+                                startActivity(i2); break;
+                            case 3:
+                                Toast.makeText(MainActivity.this, "clicked 4", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                    }
+                });
+        builder.create().show();
+
     }
 }

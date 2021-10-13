@@ -1,7 +1,6 @@
 package com.example.bookistore;
 
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,7 +10,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,48 +18,55 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.StorageTask;
-import com.google.firebase.storage.UploadTask;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Add_Category extends AppCompatActivity {
-    String bookId ;
-    EditText nameB , desB , prB;
+    TextView txtF1,txtF2;
+    EditText foodName, foodNum;
     Button add;
     FirebaseFirestore fStore;
-    CheckBox c1,c2,c3;
+    CheckBox f1,f2,f3;
     ImageView img;
     private static final int PICK_IMAGE_REQUEST = 1;
-    private Button mButtonChooseImage,mButtonUpload;
-    ArrayList <Integer> checkArr = new ArrayList();
+    private Button mButtonChooseImage;
+    ArrayList <Integer> checkArrfood = new ArrayList();
     public Uri mImageUri;
     private FirebaseStorage storage;
     private StorageReference storageReference;
-    private DatabaseReference mDatabaseRef;
-    private StorageTask mUploadTask;
-    private ProgressBar mProgressBar;
-    private EditText mEditTextFileName;
-
-
+    String  categotyId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_category);
-        main();
+        add=findViewById(R.id.addBook);
+        txtF1 =findViewById(R.id.txtf1);
+        txtF2=findViewById(R.id.txtf2);
+        foodName=findViewById(R.id.foodName);
+        foodNum=findViewById(R.id.NumF);
+        f1=findViewById(R.id.f1);
+        f2=findViewById(R.id.f2);
+        f3=findViewById(R.id.f3);
+        img=findViewById(R.id.imgBook);
+        mButtonChooseImage = findViewById(R.id.button_choose_image);
+        storage=FirebaseStorage.getInstance();
+        storageReference=storage.getReference();
+        foodName = findViewById(R.id.foodName);
+
+        Intent i =getIntent();
+        /*Bundle extras = getIntent().getExtras();
+        if (extras != null){food_category();}*/
+            if(i.getStringExtra("category").equals("0")){
+                    Toast.makeText(this,i.getStringExtra("category"),Toast.LENGTH_LONG).show();
+                    food_category();}
 
         mButtonChooseImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,30 +75,13 @@ public class Add_Category extends AppCompatActivity {
             }
         });
 
-        mButtonUpload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               // uploadImg();
-               /* if (mUploadTask != null && mUploadTask.isInProgress()) {
-                    Toast.makeText(AddBooks.this, "Upload in progress", Toast.LENGTH_SHORT).show();
-                } else {
-                  //  uploadFile();
-                }*/
-            }
-        });
-
-        //..................................................................................
-
-
-
-
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Add_books();
-                Intent i = new Intent(Add_Category.this,MainActivity.class);
-                startActivity(i);
+                food_category_DB ();
+                // Add_books();
+                Intent i2 = new Intent(Add_Category.this,MainActivity.class);
+                startActivity(i2);
             }
         });
 
@@ -112,148 +101,45 @@ public class Add_Category extends AppCompatActivity {
             mImageUri = data.getData();
             img.setImageURI(mImageUri);
 
-           // Picasso.get().load(mImageUri).into(img);
         }
     }
 
 
-
-
-    public void Add_books() {
-
+    public void food_category (){
+    foodName.setVisibility(View.VISIBLE);
+    foodNum.setVisibility(View.VISIBLE);
+    f1.setVisibility(View.VISIBLE);
+    f2.setVisibility(View.VISIBLE);
+    f3.setVisibility(View.VISIBLE);
+    txtF1.setVisibility(View.VISIBLE);
+    txtF2.setVisibility(View.VISIBLE);}
+//................................................
+public void food_category_DB (){
         fStore = FirebaseFirestore.getInstance();
+        categotyId = fStore.collection("food_category").document().getId();
+        Map<String,Object> itemsFood = new HashMap<>();
+        itemsFood.put("foodId", categotyId);
+        itemsFood.put("foodName", foodName.getText().toString());
+        itemsFood.put("typeOfFood", checkArrfood);
+        itemsFood.put("NumF", foodNum.getText().toString());
 
-        if(c1.isChecked())
-            checkArr.add(1);
-        if(c2.isChecked())
-            checkArr.add(2);
-        if(c3.isChecked())
-            checkArr.add(3);
-        bookId = fStore.collection("Newbook").document().getId();
-        uploadImg(mImageUri);
-        Map<String,Object> itemsB = new HashMap<>();
-        itemsB.put("description", desB.getText().toString());
-        itemsB.put("name",nameB.getText().toString());
-        itemsB.put("typeOfFragment",checkArr);
-        itemsB.put("bookId",bookId);
-        itemsB.put("price",prB.getText().toString());
-
-        DocumentReference documentReference = fStore.collection("Newbook").document(bookId);
-        documentReference.set(itemsB).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                Toast.makeText(Add_Category.this,"mabrooooooook",Toast.LENGTH_LONG).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull @NotNull Exception e) {
-                Toast.makeText(Add_Category.this,"toz 3lekom",Toast.LENGTH_LONG).show();
-                Toast.makeText(Add_Category.this,bookId,Toast.LENGTH_LONG).show();
-                Log.d("myTag",e.getMessage());
-
-            }
-        });
-
-        checkArr.clear();
-
-    }
-    private void uploadImg(Uri uri){
-
-        final ProgressDialog pd=new ProgressDialog((this));
-        pd.setTitle("Uploading Image ...");
-        pd.show();
-
-
-        //final String randomKey = UUID.randomUUID().toString();
-        StorageReference riversRef = storageReference.child("Newbook/"+bookId+"/mainImage.jpg");
-        riversRef.putFile(mImageUri).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                pd.dismiss();
-                Toast.makeText(getApplicationContext(),"Failed To Upload",Toast.LENGTH_LONG).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                pd.dismiss();
-                Snackbar.make(findViewById(android.R.id.content),"Image Uploded",Snackbar.LENGTH_LONG).show();
-            }
-        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onProgress(@NonNull @NotNull UploadTask.TaskSnapshot snapshot) {
-                double progressPercent =(100.00 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-                pd.setMessage("Percentage:"+(int) progressPercent + "%");
-            }
-         });
-
-
-    }
-    //...................................................
-   /* private String getFileExtension(Uri uri) {
-        ContentResolver cR = getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(cR.getType(uri));
-    }
-    ProgressDialog progressDialog ;
-
-    private void uploadFile() {
-        progressDialog = new ProgressDialog(this);
-
-        if (mImageUri != null) {
-            StorageReference fileReference = mStorageRef.child(System.currentTimeMillis()
-                    + "." + getFileExtension(mImageUri));
-            mUploadTask = fileReference.putFile(mImageUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mProgressBar.setProgress(0);
-                                }
-                            }, 500);
-                            Task<Uri> task = taskSnapshot.getMetadata().getReference().getDownloadUrl();
-                            Toast.makeText(AddBooks.this, "Upload successful", Toast.LENGTH_LONG).show();
-                            item i = new item(mEditTextFileName.getText().toString().trim(),
-                                    taskSnapshot.getMetadata().getReference().getDownloadUrl()   );
-                            String uploadId = mDatabaseRef.push().getKey();
-                            mDatabaseRef.child(uploadId).setValue(i);
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(AddBooks.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                   .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            //displaying the upload progress
-                            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-                            progressDialog.setMessage("Uploaded " + ((int) progress) + "%...");
-                        }
-                    });
-        } else {
-            Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
+        DocumentReference documentReference = fStore.collection("food_category").document(categotyId);
+    documentReference.set(itemsFood).addOnSuccessListener(new OnSuccessListener<Void>() {
+        @Override
+        public void onSuccess(Void unused) {
+            Toast.makeText(Add_Category.this,"mabrooooooook",Toast.LENGTH_LONG).show();
         }
-    }*/
-    private void main(){
-        nameB=findViewById(R.id.nameOfBook);
-        desB=findViewById(R.id.desOfBook);
-        add=findViewById(R.id.addBook);
-        prB=findViewById(R.id.priceOfBook);
-        c1=findViewById(R.id.c1);
-        c2=findViewById(R.id.c2);
-        c3=findViewById(R.id.c3);
-        img=findViewById(R.id.imgBook);
-        mButtonUpload = findViewById(R.id.button_upload);
-        mButtonChooseImage = findViewById(R.id.button_choose_image);
-        mProgressBar = findViewById(R.id.progress_bar);
-        storage=FirebaseStorage.getInstance();
-        storageReference=storage.getReference();
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference("Booki");
+    }).addOnFailureListener(new OnFailureListener() {
+        @Override
+        public void onFailure(@NonNull @NotNull Exception e) {
+            Toast.makeText(Add_Category.this,"toz 3lekom",Toast.LENGTH_LONG).show();
+            Toast.makeText(Add_Category.this,categotyId,Toast.LENGTH_LONG).show();
+            Log.d("myTag",e.getMessage());
 
+        }
+    });
+
+    checkArrfood.clear();
     }
+
 }

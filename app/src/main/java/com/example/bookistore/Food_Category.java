@@ -56,7 +56,7 @@ public class Food_Category extends Fragment {
     private void setFirebase() {
 
         fStore = FirebaseFirestore.getInstance();
-        Query query = fStore.collection("Newbook").whereArrayContains("typeOfFragment",1);
+        Query query = fStore.collection("food_category");
       //  CollectionReference documentReference2 = fStore.collection("Book");
         BookListListener = query.addSnapshotListener((documentSnapshots, error) -> {
             Log.d("tag","yaaaaaaaaaaaaa raaaaaaaab");
